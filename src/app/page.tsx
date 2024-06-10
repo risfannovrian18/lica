@@ -1,113 +1,175 @@
+'use client'
+
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
+import axios from 'axios';
+import { useQuery } from "react-query";
+import { format, parseISO } from 'date-fns';
+import Container from "@/components/Container";
+import WeatherIcon from "@/components/WeatherIcon";
+import { convertKelvinToCelcius } from "@/utils/convertKelvinToCelcius";
+
+
+// https://api.openweathermap.org/data/2.5/forecast?q=bogor&appid=3fbbb481e063cfb75f1ac7781eb73341&cnt=56
+
+interface WeatherResponse {
+  cod: string;
+  message: number;
+  cnt: number;
+  list: WeatherData[];
+  city: City;
+}
+
+interface WeatherData {
+  dt: number;
+  main: Main;
+  weather: Weather[];
+  clouds: Clouds;
+  wind: Wind;
+  visibility: number;
+  pop: number;
+  rain?: Rain;
+  sys: Sys;
+  dt_txt: string;
+}
+
+interface Main {
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  pressure: number;
+  sea_level: number;
+  grnd_level: number;
+  humidity: number;
+  temp_kf: number;
+}
+
+interface Weather {
+  id: number;
+  main: string;
+  description: string;
+  icon: string;
+}
+
+interface Clouds {
+  all: number;
+}
+
+interface Wind {
+  speed: number;
+  deg: number;
+  gust: number;
+}
+
+interface Rain {
+  '3h': number;
+}
+
+interface Sys {
+  pod: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  coord: Coord;
+  country: string;
+  population: number;
+  timezone: number;
+  sunrise: number;
+  sunset: number;
+}
+
+interface Coord {
+  lat: number;
+  lon: number;
+}
+
 
 export default function Home() {
+  const { isLoading, error, data } = useQuery<WeatherResponse>(
+    "repoData",
+    async () =>
+    {
+      const {data} = await axios.get(
+        `https://api.openweathermap.org/data/2.5/forecast?q=bogor&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
+      );
+      return data;
+    }
+
+  );
+
+  const firstData = data?.list[0];
+
+  console.log('data', data);
+  
+  if (isLoading) return (
+    <div className="flex items-center min-h-screen justify-center">
+      <p className="animate-bounce">Loading...</p>
+    </div>
+  ); 
+  /* if (error) return `Error: ${(error as Error).message}`; */
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
+      <Navbar />
+      <main className="px-3 max-w-7xl mx-auto flex flex-col gap-9 w-full pb-10 pt-4">
+        {/* today data */}
+        <section className="space-y-4">
+          <div className="space-y-4">
+            <h2 className="flex gap-1 text-2xl items-end">
+              <p> { format(parseISO(firstData?.dt_txt ??'' ),'EEEE')} </p>
+              <p className="text-lg"> ({ format(parseISO(firstData?.dt_txt ??'' ),'dd.MM.yyyy')}) </p>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+            </h2>
+            <Container className="gap-10 px-6 py-3 items-center">
+              {/* temperature */}
+              <div className="flex flex-col px-4">
+                <span className="text-5xl">
+                {convertKelvinToCelcius(firstData?.main.temp ?? 305.36)}°
+                </span>
+                <p className="text-xs space-x-1 whitespace-nowrap">
+                  <span>Feels like</span>
+                  <span>
+                    {convertKelvinToCelcius(firstData?.main.feels_like ?? 0)}°
+                  </span>
+                </p>
+                <p className="text-xs space-x-2">
+                  <span>
+                  {convertKelvinToCelcius(firstData?.main.temp_min ?? 0)}°↓{" "}
+                  </span>
+                  <span>
+                    {" "}
+                  {convertKelvinToCelcius(firstData?.main.temp_max ?? 0)}°↑
+                  </span>
+                </p>
+              </div>
+              {/* time and waether icon */}
+              <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-beetween pr-3">
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+                {data?.list.map((d,i)=>
+                <div key={i} className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
+                  <p className="whitespace-nowrap">
+                    {format(parseISO(d.dt_txt),'h.mm a')}
+                  </p>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+                  <p>
+                  <WeatherIcon iconName={d.weather[0].icon}/>
+                    {convertKelvinToCelcius(d?.main.temp ?? 0)}°
+                    </p>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+                </div>
+                )}
+              </div>
+            </Container>
+          </div>
+        </section>
+
+        {/* 7 day forcaset data */}
+        <section></section>
+      </main>
+    </div>
   );
 }
