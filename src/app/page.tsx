@@ -1,6 +1,5 @@
 'use client';
 
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import axios from 'axios';
 import { useQuery } from "react-query";
@@ -16,6 +15,7 @@ import { convertWindSpeed } from "@/utils/convertWindSpeed";
 import { loadingCityAtom, placeAtom } from "./atom";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
+
 
 interface WeatherResponse {
   cod: string;
@@ -145,7 +145,13 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
       <Navbar location={data?.city?.name} />
-      <main className="px-3 max-w-7xl mx-auto flex flex-col gap-9 w-full pb-10 pt-4">
+      <main className="px-12 max-w-auto mx-auto flex flex-col gap-9 w-full pb-10 pt-4"
+      // style={{
+      //   backgroundImage: `url('/images/background.png')`, // Menggunakan gambar latar belakang dari file lokal
+      //   backgroundSize: 'cover', // Menyesuaikan gambar agar mengisi latar belakang
+      //   backgroundPosition: 'center', // Posisi gambar latar belakang di tengah-tengah halaman
+      // }}
+      >
         <section className="space-y-4">
           <div className="space-y-4">
             <h2 className="flex gap-1 text-2xl items-end">
