@@ -99,7 +99,7 @@ export default function Navbar({location}: Props) {
             <div className='flex gap-12 justify-between pr-12 text-gray-50 text-2xl md:text-xl'>
               <Link href="/" className="hover:opacity-70">Home</Link>
               <Link href="/news" className="hover:opacity-70">News</Link>
-              <Link href="/contact" className="hover:opacity-70">Contact</Link>
+              <Link href="app/pages/contact" className="hover:opacity-70">Contact</Link>
             </div>
             <MdMyLocation 
               title="Your Current Location"
