@@ -90,21 +90,21 @@ export default function Navbar({location}: Props) {
 
    return (
     <>
-      <nav className='shadow-sm sticky top-0 left-0 z-50 bg-indigo-600'>
+      <nav className='shadow-sm sticky top-0 left-0 z-50 bg-gray-800'>
         <div className='h-[80px] w-full flex justify-between items-center max-w-auto px-3 mx-2'>
           <div className='flex items-center justify-center gap-2 pl-8'>
             <Image src="/images/LICA_logo.png" alt="Lica Logo" width={150} height={150} />
           </div>
           <section className='flex gap-2 items-center px-12'>
             <div className='flex gap-12 justify-between pr-12 text-gray-50 text-2xl md:text-xl'>
-              <Link href="/" className="hover:opacity-80">Home</Link>
-              <Link href="/news" className="hover:opacity-80">News</Link>
-              <Link href="/contact" className="hover:opacity-80">Contact</Link>
+              <Link href="/" className="hover:opacity-70">Home</Link>
+              <Link href="/news" className="hover:opacity-70">News</Link>
+              <Link href="/contact" className="hover:opacity-70">Contact</Link>
             </div>
             <MdMyLocation 
               title="Your Current Location"
               onClick={handleCurrentLocation}
-              className='text-2xl text-gray-50 hover:opacity-80 cursor-pointer'/>
+              className='text-2xl text-gray-50 hover:opacity-70 cursor-pointer'/>
             <MdOutlineLocationOn className='text-3xl text-gray-50'/>
             <p className='text-gray-50 text-sm'> {location} </p>
             <div className='relative hidden md:flex'>

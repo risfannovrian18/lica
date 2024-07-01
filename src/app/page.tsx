@@ -1,6 +1,7 @@
 'use client';
 
 import Navbar from "@/components/Navbar";
+import Footer from '../components/Footer';
 import axios from 'axios';
 import { useQuery } from "react-query";
 import { format, fromUnixTime, parseISO, isValid } from 'date-fns';
@@ -234,6 +235,7 @@ export default function Home() {
           })}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
