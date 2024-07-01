@@ -131,7 +131,12 @@ export default function Home() {
   if (isLoading || loadingCity) {
     return (
       <div className="flex items-center min-h-screen justify-center">
-        <p>Loading...</p>
+        <div className="animate-bounce">
+          <svg className="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14.883V20a2 2 0 01-2 2H7a2 2 0 01-2-2v-5.117m0-5.765V4a2 2 0 012-2h10a2 2 0 012 2v5.118m-7.438 2.904l-4.242 4.243M14.121 5.757l4.242 4.242" />
+          </svg>
+        </div>
+        <p className="ml-2">Loading...</p>
       </div>
     );
   }
